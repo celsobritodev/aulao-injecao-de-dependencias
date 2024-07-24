@@ -2,27 +2,32 @@ package br.com.giulianabezerra.aulao_injecao_de_dependencias;
 
 import java.util.List;
 
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
-
+@SpringBootApplication
 public class AulaoInjecaoDeDependenciasApplication {
 
 	public static void main(String[] args) {
 		
-		// aqui ocorre a injeção de dependecias
-		// passando as dependencias no construtor
-		// fazendo a inversão de controle
-		// somente o cliente sabe dos detalhes da implementação
-		new MigracaoUsuario(
-				new FileReader(),
-				new BdWriter()).migrar();
+		SpringApplication.run(AulaoInjecaoDeDependenciasApplication.class,args);
+		
+	}
+	
+	@Bean
+	ApplicationRunner runner(MigracaoUsuario migracaoUsuario) {
+		return args -> {migracaoUsuario.migrar();
+		};
 		
 	}
 
 }
 
 
+@Component
 class MigracaoUsuario {
 	Reader<User> reader;
 	Writer<User> writer;
@@ -59,7 +64,7 @@ interface Writer<T> {
 }
 
 
-
+@Component
 class FileReader implements Reader<User>{
  public List<User> read() {
 		System.out.println("Lendo usuários do arquivo...");
@@ -70,7 +75,7 @@ class FileReader implements Reader<User>{
 	
 }
 
-
+@Component
 class BdWriter implements Writer<User>{
 	public void write(List<User> users) {
 		System.out.println("Escrevendo usuários no banco...");
